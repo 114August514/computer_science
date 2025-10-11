@@ -1,0 +1,7 @@
+# ninja log v6
+61	791	7817992007557855	CMakeFiles/2048.dir/src/InputHandler.cpp.obj	11d3bb48b844bd43
+31	1041	7817992007252757	CMakeFiles/2048.dir/src/GameBoard.cpp.obj	dd967860834e4264
+79	1054	7817992007727869	CMakeFiles/2048.dir/src/GameRender.cpp.obj	bdde4a6919ea48fc
+1	1080	7817992006952758	CMakeFiles/2048.dir/src/main.cpp.obj	4b51f7cee892afd1
+14	1158	7817992007072766	CMakeFiles/2048.dir/src/Game.cpp.obj	f9225762737b699
+1158	1420	7817992018518045	2048.exe	9e134cc0deb17c

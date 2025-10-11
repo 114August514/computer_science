@@ -1,0 +1,396 @@
+
+
+## HW3
+
+---
+
+### 一. 选择题
+
+1. C;
+
+---
+
+### 二. 算法设计题
+
+1.  (1)  AD;
+
+     (2)  
+
+    ```c
+    bool isHandlerAllowed(const char handler[], const int n)
+    {
+        // n 输入之前记得不要计算字符串最后的"\0"
+        if (n < 0 || n % 2 == 1) return false;
+    
+        int stack_state = 0;
+        for (int i = 0; i < n; i++)
+        {
+            if (handler[i] == 'I') stack_state++;
+            else if (handler[i] == 'O') stack_state--;
+    
+            if (stack_state < 0) return false;
+        }
+    
+        if (stack_state != 0) return false;
+        return true;
+    }
+    ```
+
+2. (1)
+
+    ```c
+    int ack(int m, int n)
+    {
+        if (m == 0) return n + 1;
+        if (n == 0) return ack(m - 1, 1);
+        return ack(m - 1, ack(m, n - 1));
+    }
+    ```
+
+    ```tex
+    Ack(2,1) = Ack(1, Ack(2, 0))
+    		 = Ack(1, Ack(1, 1))
+    		 = Ack(1, Ack(0, Ack(1, 0)))
+    		 = Ack(1, Ack(0, Ack(0, 1)))
+    		 = Ack(1, Ack(0, 2))
+    		 = Ack(1, 3)
+    		 = Ack(0, Ack(1, 2))
+    		 = Ack(0, Ack(0, Ack(1, 1)))
+    		 = Ack(0, Ack(0, Ack(0, Ack(1, 0))))
+    		 = Ack(0, Ack(0, Ack(0, Ack(0, 1))))
+    		 = Ack(0, Ack(0, Ack(0, 2)))
+    		 = Ack(0, Ack(0, 3))
+    		 = Ack(0, 4)
+    		 = 5
+    ```
+
+    (2)
+
+    ```c
+    /*
+    这里是代码的.h文件。
+    */
+    
+    #include <stdbool.h>
+    
+    typedef enum
+    {
+        START = 0,
+        WAITING,
+        END
+    } StackState;
+    
+    typedef struct StackFrame // 栈帧（节点信息）
+    {
+        int m;
+        int n;
+        int result; // 初始值为-1
+        StackState state;
+        struct StackFrame* next;
+    } StackFrameHandler;
+    
+    typedef struct
+    {
+        StackFrameHandler* top;
+        int size;
+    } Stack;
+    
+    // 栈操作函数
+    void initStack(Stack* stack);
+    bool isStackEmpty(const Stack* stack);
+    void push(Stack* stack, int m, int n);
+    StackFrameHandler* pop(Stack* stack);
+    void freeStack(Stack* stack);
+    
+    // ack(m, n)
+    int ack(const int m, const int n);
+    int ackWithStack(const int m, const int n);
+    ```
+
+    
+
+    ```c
+    /*
+    这里是函数具体实现的.c文件。
+    */
+    
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <assert.h>
+    #include "ackermann.h"
+    
+    void initStack(Stack* stack)
+    {
+        if (stack == NULL) return;
+        stack->top = NULL;
+        stack->size = 0;
+    }
+    
+    bool isStackEmpty(const Stack* stack)
+    {
+        if (stack == NULL) return true;
+        return stack->size == 0;
+    }
+    
+    void push(Stack* stack, int m, int n)
+    {
+        StackFrameHandler* node = malloc(sizeof(StackFrameHandler));
+        if (node == NULL)
+        {
+            printf("内存满了，开不动了。");
+            exit(1);
+        }
+        node->m = m;
+        node->n = n;
+        node->result = -1;
+        node->state = START;
+        node->next = stack->top;
+        stack->top = node;
+        stack->size++;
+    }
+    
+    StackFrameHandler* pop(Stack* stack)
+    {
+        if (isStackEmpty(stack)) return NULL;
+        StackFrameHandler* top_frame = stack->top;
+        stack->top = stack->top->next;
+        stack->size--;
+        return top_frame;
+    }
+    
+    void freeStack(Stack* stack)
+    {
+        while (!isStackEmpty(stack))
+        {
+            StackFrameHandler* temp = pop(stack);
+            free(temp);
+        }
+    }
+    
+    int ack(const int m, const int n)
+    {
+        if (m == 0) return n + 1;
+        if (n == 0) return ack(m - 1, 1);
+        return ack(m - 1, ack(m, n - 1));
+    }
+    
+    int ackWithStack(const int m, const int n)
+    {
+        // 初始化阶段
+        Stack* stack = malloc(sizeof(Stack));
+        int result = -1;
+        initStack(stack);
+    
+        // 正式处理阶段
+        push(stack, m, n);
+        while (!isStackEmpty(stack))
+        {
+            StackFrameHandler* current = stack->top;
+            switch (current->state)
+            {
+                case START:
+                    if (current->m == 0)
+                    {
+                        current->result = current->n + 1;
+                        current->state = END;
+                    }
+                    else if (current->n == 0)
+                    {
+                        current->m -= 1;
+                        current->n = 1;
+                    }
+                    else 
+                    {
+                        push(stack, current->m, current->n - 1);
+                        current->state = WAITING;
+                    }
+                    break;
+    
+                case WAITING: // 进WAITING说明 (m != 0 && n != 0)
+                    assert(result != -1); // 保证结果如我预期
+    
+                    current->m -= 1;
+                    current->n = result;
+                    current->state = START;
+                    result = -1;
+                    break;
+    
+                case END:
+                    result = current->result;
+                    pop(stack);
+                    break;
+            }
+        }
+    
+        // 结束收尾阶段
+        freeStack(stack);
+        free(stack);
+        return result;
+    }
+    ```
+
+3. ```c
+    /*
+    这是在.h文件中的内容。
+    */
+    typedef struct Node 
+    {
+        int data;
+        struct Node* next;
+    } Node;
+    
+    typedef struct
+    {
+        int count;
+        int sum;
+    } Analysis;
+    
+    int findMaxData(const Node* head);
+    int countNodesNum(const Node* head);
+    double averageData(const Node* head);
+    
+    /*
+    这是在.c文件中的内容。
+    */
+    #include  <stdio.h>
+    #include <stdlib.h>
+    #include "linked_list.h"
+    
+    static int findMax(const Node* node)
+    {
+        if (node->next == NULL) return node->data;
+        int max = findMax(node->next);
+        return (node->data > max) ? node->data : max;
+    }
+    
+    static int countNodes(const Node* node)
+    {
+        if (node == NULL) return 0;
+        return countNodes(node->next) + 1;
+    }
+    
+    static Analysis averageAnalysis(const Node* node)
+    {
+        Analysis temp = {0, 0};
+        if (node == NULL) return temp;
+        
+        temp = averageAnalysis(node->next);
+        temp.count++;
+        temp.sum += node->data;
+    
+        return temp;
+    }
+    
+    int findMaxData(const Node* head)
+    {
+        Node* current = head->next; // 跳过头节点
+        if (current == NULL)
+        {
+            printf("无法找到空链表的最大元！");
+            exit(1);
+        }
+    
+        int max = findMax(current);
+        return max;
+    }
+    
+    int countNodesNum(const Node *head)
+    {
+        Node* current = head->next;
+        return countNodes(current);
+    }
+    
+    double averageData(const Node *head)
+    {
+        Node* current = head->next;
+        Analysis analysis = averageAnalysis(current);
+    
+        if (analysis.count == 0) return 0.0;
+        
+        double result = (double) analysis.sum / analysis.count;
+        return result;
+    }
+    ```
+
+---
+
+### 附. 算法设计补充题
+
+```c
+/*
+由于.h文件中仅有最后一个函数的函数声明，故略。
+*/
+
+#include <stdio.h>
+#include <ctype.h>
+#include <math.h>
+#include "fun.h"
+
+static char signal[3] = {' ', '+', '-'};
+
+static void print_array(const char* str)
+{
+    const char* temp = str;
+    while (*temp != '\0')
+    {
+        if (*temp == ' ');
+        else printf("%c", *temp);
+
+        temp++;
+    }
+
+    printf("\n");
+}
+
+static int calculator(const char* str)
+{
+    const char* temp = str;
+    int num = 0;
+    int sum = 0;
+    int sign = 1; // 1表示正；-1表示负
+
+    while (*temp != '\0')
+    {
+        if (*temp == ' ');
+        else if (isdigit(*temp)) num = num * 10 + (*temp - '0'); 
+        else if (*temp == '+' || *temp == '-')
+        {
+            sum += sign * num;
+            num = 0;
+            sign = (*temp == '+') ? 1 : -1; 
+        }
+
+        temp++;
+    }
+
+    sum += sign * num;
+    return sum;
+}
+
+static void generate(char* str, int key)
+{
+    // key 是从 0 到 3**8 - 1
+    char* current = str + 1;
+    int index = 0;
+    while (*current != '\0')
+    {
+        index = key % 3;
+        *current = signal[index];
+        current += 2;
+        key /= 3;
+    }
+}
+
+void enumerate_possiblity()
+{
+    char original[] = "1 2 3 4 5 6 7 8 9";
+    for (int i = 0; i < pow(3, 8); i++)
+    {
+        generate(original, i);
+        if (calculator(original) == 110) print_array(original);
+    }
+}
+```
+
+
+
