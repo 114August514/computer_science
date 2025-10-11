@@ -1,18 +1,13 @@
 cmake_minimum_required(VERSION 3.31)
 project(hw3 C CXX)
 
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
-include_directories(.)
+include_directories(Inc)
 
-add_executable(hw3
-        main.c
-        main.h
-        stack.c
-        stack.h
-        ackermann.c
-        ackermann.h
-        linked_list.c
-        linked_list.h
-        fun.c
-        fun.h)
+# 设置源码文件路径
+file(GLOB_RECURSE SOURCES "Src/*.c" "Src/*.cpp")
+
+# 生成可执行文件
+add_executable(${PROJECT_NAME} ${SOURCES})
