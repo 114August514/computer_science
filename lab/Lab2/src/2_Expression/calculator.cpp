@@ -220,8 +220,8 @@ struct calculator::element calculator::operate(struct calculator::element elemen
     // TODO
     // 只要有一个数是浮点型 或 除法有余数 或 乘方运算中指数位为负数 就返回浮点型
     int flag = 0;
-    double v1 = (element1.flag == 0) ? static_cast<double>(element1.num_int) : element1.num_double;
-    double v2 = (element2.flag == 0) ? static_cast<double>(element2.num_int) : element2.num_double;
+    double v1 = (element1.flag == 0) ? (double) element1.num_int : element1.num_double;
+    double v2 = (element2.flag == 0) ? (double) element2.num_int : element2.num_double;
     double result = 0.0;
 
     if (element1.flag || element2.flag) flag = 1;
@@ -280,7 +280,7 @@ struct calculator::element calculator::operate(struct calculator::element elemen
     }
     
     if (flag) return {flag, 0, result};
-    return {flag, static_cast<int>(result), 0.0};
+    return {flag, (int) result, 0.0};
 }
 
 struct calculator::element calculator::get_ans() {
