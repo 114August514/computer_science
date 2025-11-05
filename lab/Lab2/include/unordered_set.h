@@ -9,6 +9,29 @@ class unordered_set {
     public:
         unordered_set() = default;
         ~unordered_set() = default;
+
+        // TODO
+        int size() const
+        {
+            return top_index;
+        }
+
+        bool operator==(const unordered_set<data_base>& other) const
+        {
+            if (size() != other.size()) return false;
+
+            for (int i = 0; i < size(); i++)
+            {
+                if (!other.find(list_data[i])) return false;
+            }
+            return true;
+        }
+
+        bool operator!=(const unordered_set<data_base>& other) const
+        {
+            return !(*this == other);
+        }
+
         bool empty() {
             return top_index == 0;
         }
@@ -19,7 +42,7 @@ class unordered_set {
         void clear() {
             top_index = 0;
         }
-        bool find(data_base check_data) {
+        bool find(data_base check_data) const {
             for (int i = 0; i < top_index; i++)
                 if (list_data[i] == check_data)
                     return true;

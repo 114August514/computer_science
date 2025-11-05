@@ -3,11 +3,16 @@
 int main() {
     int steps = 6;
     int n = 5;
-    int gold[1001] = {1, 2, 
-                    3, 3, 
-                    5, 0, 
-                    1, 1,
-                    4, 5};
+
+    // TODO:修改了数据类型。
+    DATA_STRUCTURE::Point gold[501] = 
+    {
+        {1, 2}, 
+        {3, 3}, 
+        {5, 0}, 
+        {1, 1},
+        {4, 5}
+    };
     int value[501] = {3, 2, 1, 4, 10};
     //std::cin >> steps >> n;
     //for (int i = 0; i < n; i++)
