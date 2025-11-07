@@ -36,7 +36,10 @@ int main() {
         if (b.legal()) {
             std::cout << b.get_expr() << " = ";
             struct DATA_STRUCTURE::calculator::element tmp = b.get_ans();
-            if (tmp.flag == 0)
+            
+            if (tmp.flag < 0) 
+                std::cout << "NAN" << std::endl;
+            else if (tmp.flag == 0)
                 std::cout << tmp.num_int << std::endl;
             else
                 std::cout << tmp.num_double << std::endl;

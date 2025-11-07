@@ -339,7 +339,9 @@ struct calculator::element calculator::get_ans() {
                 num.pop();
                 char op_char = op.top();
                 op.pop();
-                num.push(operate(e1, op_char, e2));
+                struct element temp = operate(e1, op_char, e2);
+                if (temp.flag < 0) return {temp.flag, 0, 0.0};
+                num.push(temp);
             }
             if (!op.empty()) op.pop();
             expr_index++;
@@ -363,7 +365,9 @@ struct calculator::element calculator::get_ans() {
             num.pop();
             char op_char = op.top();
             op.pop();
-            num.push(operate(e1, op_char, e2));
+            struct element temp = operate(e1, op_char, e2);
+            if (temp.flag < 0) return {temp.flag, 0, 0.0};
+            num.push(temp);
         }
 
         op.push(c);
@@ -380,7 +384,9 @@ struct calculator::element calculator::get_ans() {
         num.pop();
         char op_char = op.top();
         op.pop();
-        num.push(operate(e1, op_char, e2));
+        struct element temp = operate(e1, op_char, e2);
+        if (temp.flag < 0) return {temp.flag, 0, 0.0};
+        num.push(temp);
     }
 
     struct element final_result{};
