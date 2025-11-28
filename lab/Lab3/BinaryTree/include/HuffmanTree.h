@@ -16,11 +16,9 @@ public:
     char character; // 存储字符
     int frequency;  // 存储字符频率
 
-    // 默认构造函数
+    // 默认构造函数（TODO：由于基类已经实现初始化左右子指针，故删除冗余代码）
     // 将字符设置为 '\0'，频率为 0，左右孩子指针初始化为空
-    HuffmanTreeNode() : character('\0'), frequency(0) {
-        left = right = nullptr;
-    }
+    HuffmanTreeNode() : character('\0'), frequency(0) {}
     
     // 构造函数
     // 参数:

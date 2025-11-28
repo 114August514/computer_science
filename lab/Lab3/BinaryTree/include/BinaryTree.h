@@ -20,7 +20,7 @@ public:
     BinaryTreeNode(); 
 
     // 默认析构函数
-    ~BinaryTreeNode() = default;
+    virtual ~BinaryTreeNode();
 
     // 先序遍历，遍历顺序：根 -> 左子树 -> 右子树
     // 参数:

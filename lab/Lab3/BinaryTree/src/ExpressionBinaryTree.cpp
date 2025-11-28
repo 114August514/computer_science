@@ -18,6 +18,35 @@ string ExpressionBinaryTreeNode::getValue() {
 //    返回构建的表达式树根节点
 ExpressionBinaryTreeNode* ExpressionBinaryTreeNode::buildFromPostfix(const string& postfix) {
     // TODO
+    stack<ExpressionBinaryTreeNode*> operandStack; // 存储操作数的栈
+    
+    for (size_t i = 0; i < postfix.size(); i++)
+    {
+        char ch = postfix[i];
+
+        if (isdigit(ch))
+            // 1. 如果是数字，创造新节点并压入栈
+            operandStack.push(new ExpressionBinaryTreeNode(string(1, ch)));
+            
+        else if (ch == '+' || ch == '-' || ch == '*' || ch == '/')
+        {
+            // 2. 处理运算符
+            ExpressionBinaryTreeNode* node = new ExpressionBinaryTreeNode(string(1, ch));
+
+            ExpressionBinaryTreeNode* right = operandStack.top();
+            operandStack.pop();
+
+            ExpressionBinaryTreeNode* left = operandStack.top();
+            operandStack.pop();
+
+            // 连接节点
+            node->left = left;
+            node->right = right;
+            operandStack.push(node);
+        }
+    }
+
+    return operandStack.empty() ? nullptr : operandStack.top();
 }
 
 // 从前缀表达式构建表达式树
@@ -27,6 +56,30 @@ ExpressionBinaryTreeNode* ExpressionBinaryTreeNode::buildFromPostfix(const strin
 //    返回构建的表达式树根节点
 ExpressionBinaryTreeNode* ExpressionBinaryTreeNode::buildFromPrefix(const string& prefix) {
     // TODO
+    // 从右向左扫描字符串时与后缀表达式构建方式差不多
+    stack<ExpressionBinaryTreeNode*> operandStack;
+
+    for (int i = prefix.size() - 1; i >= 0; i--)
+    {
+        // 由于 size_t 是 unsigned，故改用 int
+        char ch = prefix[i];
+
+        if (isdigit(ch))
+            operandStack.push(new ExpressionBinaryTreeNode(string(1, ch)));
+        else if (ch == '+' || ch == '-' || ch == '*' || ch == '/')
+        {
+            ExpressionBinaryTreeNode* node = new ExpressionBinaryTreeNode(string(1, ch));
+            ExpressionBinaryTreeNode* left = operandStack.top();
+            operandStack.pop();
+            ExpressionBinaryTreeNode* right = operandStack.top();
+            operandStack.pop();
+
+            node->left = left;
+            node->right = right;
+            operandStack.push(node);
+        }
+    }
+    return operandStack.empty() ? nullptr : operandStack.top();
 }
 
 // 从中缀表达式构建表达式树
@@ -44,7 +97,7 @@ ExpressionBinaryTreeNode* ExpressionBinaryTreeNode::buildFromInfix(const string&
         
         if (isdigit(ch)) {
             // 如果是数字，创建新的操作数节点并压入操作数栈
-            operandStack.push(new ExpressionBinaryTreeNode(string(1, ch)));
+            operandStack.push(new ExpressionBinaryTreeNode(string(1, ch))); // string(1, ch): 将 ch 重复 1 次
         } else if (ch == '(') {
             // 如果是左括号，直接入运算符栈
             operatorStack.push(ch);
@@ -98,8 +151,8 @@ ExpressionBinaryTreeNode* ExpressionBinaryTreeNode::buildFromInfix(const string&
         operandStack.push(node);
     }
 
-    // 返回最终构建好的表达式树的根节点
-    return operandStack.top();
+    // 返回最终构建好的表达式树的根节点（TODO：多加了个是否为空的判断）
+    return operandStack.empty()? nullptr : operandStack.top();
 }
 
 // 获取运算符的优先级
@@ -122,15 +175,19 @@ int ExpressionBinaryTreeNode::evaluate() {
         return stoi(value);  // 使用stoi将字符串转换为整数
     }
     
-    // 否则递归计算左右子树的值
-    int leftVal = dynamic_cast<ExpressionBinaryTreeNode*>(left)->evaluate();    
-    int rightVal = dynamic_cast<ExpressionBinaryTreeNode*>(right)->evaluate();
+    // 否则递归计算左右子树的值（TODO：修改了动态转换，因为原本的动态转换没有验明转换是否成功）
+    int leftVal = static_cast<ExpressionBinaryTreeNode*>(left)->evaluate();    
+    int rightVal = static_cast<ExpressionBinaryTreeNode*>(right)->evaluate();
     
     // 根据当前节点的运算符计算值
     if (value == "+") return leftVal + rightVal;
     if (value == "-") return leftVal - rightVal;
     if (value == "*") return leftVal * rightVal;
-    if (value == "/") return leftVal / rightVal;
+    if (value == "/") 
+    {
+        if (rightVal == 0) throw runtime_error("Division by zero");
+        return leftVal / rightVal;
+    }
     
     // 如果是无效的运算符，抛出异常
     throw invalid_argument("Invalid operator");
