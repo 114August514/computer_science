@@ -1,5 +1,6 @@
 # 忽略特定文件夹
 /**/done/
 /**/original/
+/icsh-code/
 temp/
 PB24*
