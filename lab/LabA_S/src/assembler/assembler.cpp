@@ -7,6 +7,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <map>
+#include <vector>
+#include <algorithm>
 #include "utils.h"
 #include "assembler.h"
 
@@ -124,7 +126,16 @@ void Assembler::PrintSymbolTable() const
 {
     std::cout << "-- -Symbol Table-- -" << std::endl;
 
-    for (const auto& pair : symbol_table_)
+    // 用地址排序（原 map 用字典序排序）
+    std::vector<std::pair<string, uint16_t>> sorted_symbols(symbol_table_.begin(), symbol_table_.end());
+    std::sort(sorted_symbols.begin(), sorted_symbols.end(),
+        [](const std::pair<string, uint16_t>& a, auto& b)
+        {
+            return a.second < b.second;
+        }
+    );
+
+    for (const auto& pair : sorted_symbols)
     {
         const string& label = pair.first;
         uint16_t addr = pair.second;
@@ -354,8 +365,21 @@ bool Assembler::PassTwo(bool debug_mode)
             // 处理 FILL
             if (pseudo == PseudoOp::FILL)
             {
-                int16_t val = ParseImmediate(tokens[start_idx + 1]);
-                memory_buffer[lc_++] = static_cast<uint16_t>(val);
+                string operand = tokens[start_idx + 1];
+                try
+                {
+                    // a. 先尝试立即数解析
+                    int16_t val = ParseImmediate(tokens[start_idx + 1]);
+                    memory_buffer[lc_++] = static_cast<uint16_t>(val);
+                }
+                catch(...)
+                {
+                    // b. 如果不是立即数，则认为是 Label
+                    if (symbol_table_.count(operand))
+                        memory_buffer[lc_++] = symbol_table_[operand];
+                    else
+                        throw ErrorCode::LABEL_UNDEFINED;
+                }
                 continue;
             }
 
@@ -451,16 +475,16 @@ bool Assembler::PassTwo(bool debug_mode)
     uint16_t max_addr = memory_buffer.rbegin()->first;
 
     // 写入文件头（标记内存起始地址）
-    WriteWord(file, min_addr);
+    Utils::IO::WriteWord(file, min_addr);
 
     // 线性写入数据，并填补空缺
     for (uint32_t cur = min_addr; cur <= max_addr; cur++)
     {
         uint16_t addr = static_cast<uint16_t>(cur);
         if (memory_buffer.count(addr))
-            WriteWord(file, memory_buffer[addr]);
+            Utils::IO::WriteWord(file, memory_buffer[addr]);
         else
-            WriteWord(file, 0);
+            Utils::IO::WriteWord(file, 0);
     }
 
     file.close();
@@ -559,11 +583,7 @@ uint16_t Assembler::CalSize(const std::vector<string> &tokens)
 
         // 处理 .FILL
         case PseudoOp::FILL:
-        {
-            // 用来检查
-            ParseImmediate(tokens[start_idx + 1]);
             return 1;
-        }
 
         // 处理 .ORIG
         case PseudoOp::ORIG:
@@ -868,12 +888,4 @@ uint16_t Assembler::HandleTrap(const std::vector<string> &tokens)
         throw ErrorCode::UNKNOWN_MNEMONIC;
 
     return machine_code;
-}
-
-void Assembler::WriteWord(std::ostream& os, uint16_t val)
-{
-    uint8_t buffer[2];
-    buffer[0] = (val >> 8) & 0xFF;  // 高 8 位
-    buffer[1] = val & 0xFF;         // 低 8 位
-    os.write(reinterpret_cast<const char *>(buffer), 2);
 }

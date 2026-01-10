@@ -4,7 +4,15 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
 #include "assembler.h"
+
+void ShowUsage()
+{
+    std::cout << "Usage:" << std::endl;
+    std::cout << "  Assemble: assembler [options] <input.asm> <output.bin>" << std::endl;
+    std::cout << "   -d   Debug mode (print machine code)" << std::endl;
+}
 
 int main(int argc, char* argv[])
 {
@@ -21,12 +29,18 @@ int main(int argc, char* argv[])
     }
 
     if (args.size() != 2)
+    {
+        std::cout << "[Error] Invalid arguments count: " << args.size() << std::endl;
+        ShowUsage();
         return 1;
+    }
 
     string input_path = args[0];
     string output_path = args[1];
 
     Assembler assembler(input_path, output_path);
+
+    std::cout << "Assembling '" << input_path << "' -> '" << output_path << "' ..." << std::endl;
 
     if (assembler.Run(debug_mode))
     {

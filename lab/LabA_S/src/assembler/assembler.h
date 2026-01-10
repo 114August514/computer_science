@@ -82,9 +82,6 @@ class Assembler
         
         // 处理 TRAP
         static uint16_t HandleTrap(const std::vector<string> &tokens);
-
-        // 采用大端序写入16位字到输出流
-        static void WriteWord(std::ostream& os, uint16_t val);
 };
 
 

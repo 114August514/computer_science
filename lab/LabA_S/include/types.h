@@ -14,7 +14,6 @@
 #define TYPES_H
 
 #include <cstdint>
-#include <cstddef>
 #include <string>
 
 // 1. 常用数据类型别名
@@ -28,6 +27,7 @@ using string = std::string;
 // 2. 常量表
 const size_t MEMORY_MAX = 65536;
 const uint16_t PC_START = 0x3000;
+const uint32_t MAX_INSTR_LIMIT = 0xFFFFF;
 
 // 3. 指令操作码
 enum OpCode : uint16_t
@@ -91,7 +91,10 @@ enum class Exception
 {
     ACV = 0,            // 访问控制违规
     ILLEGAL_OPCODE,     // 非法操作码（主要是越权使用 RTI）
-    PMV                 // 特权模式违规
+    PMV,                // 特权模式违规
+
+    // 非 LC3 本土的异常处理（防超时什么的）
+    TIMEOUT             // 死循环保护
 };
 
 // 8. 存储相关

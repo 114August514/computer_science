@@ -8,6 +8,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 #include "types.h"
@@ -170,7 +171,7 @@ namespace Utils
         // 支持格式：x0A (十六进制), #10 (十进制), 10 (无前缀十进制).
         // 输入：可被解析的字符串（默认可解析）;
         // 输出：整数.
-        inline int32_t StrToInt(string token)
+        inline int32_t StrToInt(const string& token)
         {
             if (token.empty())
                 throw ErrorCode::INVALID_OPERAND;
@@ -223,5 +224,30 @@ namespace Utils
             return val;
         }
     }
+
+    // 4. 输入输出工具
+    namespace IO
+    {
+        // 采用大端序写入 16 位字到输出流
+        inline void WriteWord(std::ostream& os, uint16_t val)
+        {
+            uint8_t buffer[2];
+            buffer[0] = (val >> 8) & 0xFF; // 高 8 位
+            buffer[1] = val & 0xFF;        // 低 8 位
+            os.write(reinterpret_cast<const char *>(buffer), 2);
+        }
+
+        // 从输入流读取大端序的 16 位字
+        // 读取成功返回 true，失败返回 false（未读到完整字符等）
+        inline bool ReadWord(std::istream& is, uint16_t& val)
+        {
+            char buffer[2];
+            if (!is.read(buffer, 2)) return false;
+
+            val = (static_cast<uint8_t>(buffer[0]) << 8) | static_cast<uint8_t>(buffer[1]);
+            return true;
+        }
+    } 
+    
 }
 #endif //UTILS_H
