@@ -28,6 +28,16 @@ class Assembler
         bool Run(bool debug_mode = false);
 
     private:
+        // 0. 定义代码段结构
+        struct CodeBlock
+        {
+            uint16_t start_addr;                    // 当前段的起始地址
+            std::vector<uint16_t> code;             // 连续的机器码
+
+            CodeBlock() : start_addr(0) {}
+            CodeBlock(uint16_t addr) : start_addr(addr) {}
+        };
+
         // 1. 成员变量
         string input_path_;
         string output_path_;
@@ -43,6 +53,9 @@ class Assembler
         
         // 第二遍扫描：翻译指令，生成机器码 
         bool PassTwo(bool debug_mode);
+
+        // 将处理完的代码块输出到二进制文件中
+        bool SaveBinFile(const std::vector<CodeBlock>& blocks);
 
         // 3. 工具函数
         // 格式化并记录汇编过程中发生的错误.

@@ -307,9 +307,8 @@ bool Assembler::PassOne()
 
 bool Assembler::PassTwo(bool debug_mode)
 {
-    // 为保证兼容多个 .ORIG 的输入格式，使用 map 缓存机器码
-    // Key 为地址， Val 为 机器码
-    std::map<uint16_t, uint16_t> memory_buffer;
+    // 为保证兼容多个 .ORIG 的输入格式，使用 std::vector<CodeBlock> 缓存机器码
+    std::vector<CodeBlock> memory_buffer;
 
     // 1. 初始化（虽然进 Pass 2 说明 Pass 1 没有报错，但仍进行清理操作）
     has_error_ = false;
@@ -350,6 +349,10 @@ bool Assembler::PassTwo(bool debug_mode)
                 // 参数检查 Pass 1 做过了，故默认合法
                 lc_ = static_cast<uint16_t>(Utils::Convert::StrToInt(tokens[start_idx + 1]));
                 in_block = true;
+
+                CodeBlock new_block(lc_);
+                memory_buffer.push_back(new_block);
+
                 continue;
             }
 
@@ -360,34 +363,40 @@ bool Assembler::PassTwo(bool debug_mode)
                 continue;
             }
 
-            if (!in_block) continue;
+            if (!in_block) continue; // 基本上不会运行
+
+            // 获取当前代码块
+            CodeBlock& current_block = memory_buffer.back();
 
             // 处理 FILL
             if (pseudo == PseudoOp::FILL)
             {
                 string operand = tokens[start_idx + 1];
+                uint16_t val = 0;
                 try
                 {
                     // a. 先尝试立即数解析
-                    int16_t val = ParseImmediate(tokens[start_idx + 1]);
-                    memory_buffer[lc_++] = static_cast<uint16_t>(val);
+                    val = static_cast<uint16_t> (ParseImmediate(operand));
                 }
                 catch(...)
                 {
                     // b. 如果不是立即数，则认为是 Label
                     if (symbol_table_.count(operand))
-                        memory_buffer[lc_++] = symbol_table_[operand];
+                        val = symbol_table_[operand];
                     else
                         throw ErrorCode::LABEL_UNDEFINED;
                 }
+
+                current_block.code.push_back(val);
+                lc_++;
                 continue;
             }
 
             // 处理 .BLKW
-            // 在代码块中的正常代码(map 中留空，输出时会自动填 0)
             if (pseudo == PseudoOp::BLKW)
             {
                 int32_t count = Utils::Convert::StrToInt(tokens[start_idx + 1]);
+                current_block.code.insert(current_block.code.end(), count, 0);
                 lc_ += static_cast<uint16_t>(count);
                 continue;
             }
@@ -425,9 +434,13 @@ bool Assembler::PassTwo(bool debug_mode)
                             i++;
                         }
                     }
-                    memory_buffer[lc_++] = static_cast<uint16_t>(c);
+                    current_block.code.push_back(static_cast<uint16_t>(c));
+                    lc_++;
                 }
-                memory_buffer[lc_++] = 0; // '\0'
+
+                // 写 '\0'
+                current_block.code.push_back(0);
+                lc_++;
                 continue;
             }
 
@@ -438,7 +451,7 @@ bool Assembler::PassTwo(bool debug_mode)
                 instr_tokens.assign(tokens.begin() + start_idx, tokens.end());
 
                 uint16_t bin = TranslateLine(instr_tokens, lc_);
-                memory_buffer[lc_] = bin;
+                current_block.code.push_back(bin);
 
                 if (debug_mode)
                 {
@@ -461,7 +474,13 @@ bool Assembler::PassTwo(bool debug_mode)
 
     // 3. 输出文件
     if (has_error_) return false;
-    if (memory_buffer.empty()) return true; // 空文件
+    return SaveBinFile(memory_buffer);
+}
+
+bool Assembler::SaveBinFile(const std::vector<CodeBlock>& blocks)
+{
+    // 空文件
+    if (blocks.empty()) return true;
 
     std::ofstream file(output_path_, std::ios::binary);
     if (!file.is_open())
@@ -470,22 +489,43 @@ bool Assembler::PassTwo(bool debug_mode)
         return false;
     }
 
-    // 找到最小和最大地址
-    uint16_t min_addr = memory_buffer.begin()->first;
-    uint16_t max_addr = memory_buffer.rbegin()->first;
-
-    // 写入文件头（标记内存起始地址）
-    Utils::IO::WriteWord(file, min_addr);
-
-    // 线性写入数据，并填补空缺
-    for (uint32_t cur = min_addr; cur <= max_addr; cur++)
+    // 根据 blocks 的大小决定输出格式（保证向下兼容）
+    // A. 仅一个代码块（输出标准格式）
+    if (blocks.size() == 1)
     {
-        uint16_t addr = static_cast<uint16_t>(cur);
-        if (memory_buffer.count(addr))
-            Utils::IO::WriteWord(file, memory_buffer[addr]);
-        else
-            Utils::IO::WriteWord(file, 0);
+        const CodeBlock& block = blocks[0];
+
+        // 写入文件头（标记内存起始地址）
+        Utils::IO::WriteWord(file, block.start_addr);
+
+        // 写入数据
+        for (uint16_t data : block.code)
+            Utils::IO::WriteWord(file, data);
     }
+
+    // B. 多个代码块
+    else
+    {
+        // 写入 Magic Number 用于模拟器模式区分
+        Utils::IO::WriteWord(file, LC3_NUMBER);
+
+        // 写入程序入口
+        Utils::IO::WriteWord(file, blocks[0].start_addr);
+
+        // 写入数据
+        for (const CodeBlock& block : blocks)
+        {
+            if (block.code.empty()) continue;
+
+            // Header: [地址] [长度]
+            Utils::IO::WriteWord(file, block.start_addr);
+            Utils::IO::WriteWord(file, static_cast<uint16_t>(block.code.size()));
+
+            // Body: [数据...]
+            for (uint16_t data : block.code)
+                Utils::IO::WriteWord(file, data);
+        }
+    }    
 
     file.close();
     return true;
@@ -556,7 +596,7 @@ uint16_t Assembler::CalSize(const std::vector<string> &tokens)
         case PseudoOp::BLKW:
         {
             int32_t val = Utils::Convert::StrToInt(tokens[start_idx + 1]);
-            if (val < 0) // val < 0xFFFF 始终成立
+            if (val <= 0) // val < 0xFFFF 始终成立（原本是负数，但考虑到 0 没有意义，就也算错误了）
                 throw ErrorCode::INVALID_OPERAND;
 
             return static_cast<uint16_t>(val);

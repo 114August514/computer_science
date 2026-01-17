@@ -8,7 +8,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <iostream>
 #include <stdexcept>
 #include <vector>
 #include "types.h"
@@ -238,7 +237,7 @@ namespace Utils
         }
 
         // 从输入流读取大端序的 16 位字
-        // 读取成功返回 true，失败返回 false（未读到完整字符等）
+        // 读取成功返回 true，失败返回 false（未读到完整字符等（包括 EOF））
         inline bool ReadWord(std::istream& is, uint16_t& val)
         {
             char buffer[2];

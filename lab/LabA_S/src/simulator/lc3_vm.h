@@ -2,6 +2,9 @@
 // Created by Admin on 26-1-5.
 //
 
+// 暂时只支持 .ORIG 从 x3000 开始，怎么优化我还没想好。
+// 后续优化方向应该是修改 assembler 的实现逻辑，按 .ORIG 输出多个文件
+
 #ifndef LC3_VM_H
 #define LC3_VM_H
 
@@ -23,10 +26,11 @@ class LC3_VM
         // 初始化相关
         void SetReg(RegID id, uint16_t val);
         void SetMem(uint16_t addr, uint16_t val);
+        void SetPCStart(uint16_t addr);
 
         // 执行控制
         bool Step();    // 单步执行（辅助调试）
-        void Run();     // 连续运行，直到遇到 HALT，断点，异常
+        ExitReason Run();     // 连续运行，直到遇到 HALT，断点，异常
 
         // 断点设置
         void AddBreakpoint(uint16_t addr);
@@ -35,6 +39,7 @@ class LC3_VM
         // 状态查看
         void PrintReg() const;
         void PrintMem(uint16_t start_addr, uint16_t end_addr) const;
+        uint16_t GetReg(RegID reg) const;
         uint32_t GetInstrCount() const;
 
     private:
@@ -49,12 +54,15 @@ class LC3_VM
         bool running_;                            // 是否运行
         bool is_halted_;                          // 是否终止
 
+        // c. 输入参数
+        uint16_t pc_start_ = PC_START;            // 程序入口
+
         // 2. 核心函数
         // a. 取指：IR = MEM[PC], PC++;
         void Fetch();
 
         // b. 译码
-        OpCode Decode();
+        OpCode Decode() const;
 
         // c. 执行单条指令
         void Execute(OpCode op);
@@ -64,10 +72,10 @@ class LC3_VM
 
         // 3. 辅助函数
         // 检查是否非法访问
-        bool CheckAccess(uint16_t addr);
+        void CheckAccess(uint16_t addr) const;
 
         // 内存读取
-        uint16_t MemRead(uint16_t addr);
+        uint16_t MemRead(uint16_t addr) const;
 
         // 内存写入
         void MemWrite(uint16_t addr, uint16_t val);

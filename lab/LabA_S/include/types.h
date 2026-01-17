@@ -26,6 +26,7 @@ using string = std::string;
 
 // 2. 常量表
 const size_t MEMORY_MAX = 65536;
+const uint16_t LC3_NUMBER = 0x1C3B;         // 这个是用来定义高级文件的文件头
 const uint16_t PC_START = 0x3000;
 const uint32_t MAX_INSTR_LIMIT = 0xFFFFF;
 
@@ -92,12 +93,18 @@ enum class Exception
     ACV = 0,            // 访问控制违规
     ILLEGAL_OPCODE,     // 非法操作码（主要是越权使用 RTI）
     PMV,                // 特权模式违规
-
-    // 非 LC3 本土的异常处理（防超时什么的）
-    TIMEOUT             // 死循环保护
 };
 
-// 8. 存储相关
+// 8. 运行终止信号
+enum class ExitReason
+{
+    HALTED,             // 正常停机 (TRAP x25)
+    BREAKPOINT,         // 遇到断点
+    TIMEOUT,            // 指令数超限
+    EXCEPTION           // 发生异常
+};
+
+// 9. 存储相关
 enum RegID : int16_t    // 寄存器标识符
 {
     // 通用寄存器

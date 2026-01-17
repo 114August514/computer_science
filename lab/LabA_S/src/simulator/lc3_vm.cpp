@@ -20,7 +20,6 @@ namespace
                 {Exception::ACV, "Access Control Violation."},
                 {Exception::ILLEGAL_OPCODE, "Illegal Opcode."},
                 {Exception::PMV, "Privilege Mode Violation."},
-                {Exception::TIMEOUT, "Execution Timeout."}
             };
 
         auto it = excep_msg_map.find(e);
@@ -34,9 +33,6 @@ namespace
 // 1. 公共接口实现 
 LC3_VM::LC3_VM()
 {
-    // 设置 PC 的默认地址
-    reg_[PC] = PC_START;
-
     // 设置 PSR
     // 默认为：用户模式，CC = Z
     reg_[PSR] = 0x8002;
@@ -52,31 +48,92 @@ bool LC3_VM::LoadBinFile(const string& file_path)
     std::ifstream file(file_path, std::ios::binary);
     if (!file.is_open())
     {
-        std::cout << "[Error] Cannot open file: " << file_path << std::endl;
+        std::cout << "[Error] LoadBinFile: Cannot open file: " << file_path << std::endl;
         return false;
     }
 
-    // 1. 读取起始地址
-    uint16_t origin = 0;
-    if (!Utils::IO::ReadWord(file, origin))
+    // 0. 预读取文件头，判断模式
+    uint16_t head = 0;
+    if (!Utils::IO::ReadWord(file, head))
     {
-        std::cout << "[Error] Cannot read file correctly!" << std::endl;
+        std::cout << "[Error] LoadBinFile: Cannot read file correctly!" << std::endl;
         return false;
     }
 
-    // 2. 加载指令到内存
-    reg_[PC] = origin;
-    uint32_t current_addr = origin;
-    uint16_t instr = 0;
-
-    while (Utils::IO::ReadWord(file, instr))
+    // A. 高级模式
+    if (head == LC3_NUMBER)
     {
-        if (current_addr >= MEMORY_MAX)
+        std::cout << "[Loader] Detected Advanced LC-3 Format." << std::endl;
+        
+        // 1. 读取起始地址
+        if (Utils::IO::ReadWord(file, pc_start_))
+            reg_[PC] = pc_start_;
+        else
         {
-            std::cout << "[Error] Memory address overflow!" << std::endl;
-            break;
+            std::cout << "[Error] LoadBinFile: File format error." << std::endl;
+            return false;
         }
-        memory_[current_addr++] = instr;
+
+        // 2. 循环读取数据块
+        while (file.peek() != EOF)
+        {
+            uint16_t start_addr, length;
+
+            if (!Utils::IO::ReadWord(file, start_addr))
+            {
+                std::cout << "[Error] LoadBinFile: File format error." << std::endl;
+                return false;
+            }
+
+            if (!Utils::IO::ReadWord(file, length))
+            {
+                std::cout << "[Error] LoadBinFile: Missing length at x"
+                          << std::hex << std::uppercase << start_addr << std::dec << "." << std::endl;
+                return false;
+            }
+
+            for (uint16_t i = 0; i < length; i++)
+            {
+                uint16_t instr;
+                if (!Utils::IO::ReadWord(file, instr))
+                {
+                    std::cout << "[Error] LoadBinFile: Block data truncated at x"
+                              << std::hex << std::uppercase << (start_addr + i)
+                              << ". Expected " << std::dec << length << " words." << std::endl;
+                    return false;
+                }
+                SetMem(start_addr + i, instr);
+            }
+        }
+    }
+
+    // B. 普通模式
+    else
+    {
+        // 1. 读取起始地址
+        uint32_t current_addr = head;
+        pc_start_ = current_addr;
+        reg_[PC] = pc_start_;
+
+        // 2. 加载指令到内存
+        uint16_t instr;
+
+        while (file.peek() != EOF)
+        {
+            if (current_addr >= MEMORY_MAX)
+            {
+                std::cout << "[Error] LoadBinFile: Memory address overflow!" << std::endl;
+                return false;
+            }
+            
+            if (!Utils::IO::ReadWord(file, instr))
+            {
+                std::cout << "[Error] LoadBinFile: File format error." << std::endl;
+                return false;
+            }
+            
+            SetMem(current_addr++, instr);
+        }
     }
 
     file.close();
@@ -91,6 +148,12 @@ void LC3_VM::SetReg(RegID id, uint16_t val)
 void LC3_VM::SetMem(uint16_t addr, uint16_t val)
 {
     memory_[addr] = val;
+}
+
+void LC3_VM::SetPCStart(uint16_t addr)
+{
+    pc_start_ = addr;
+    reg_[PC] = pc_start_;
 }
 
 bool LC3_VM::Step()
@@ -113,7 +176,7 @@ bool LC3_VM::Step()
     }
 }
 
-void LC3_VM::Run()
+ExitReason LC3_VM::Run()
 {
     // 0. 启动检查
     running_ = true;
@@ -122,6 +185,7 @@ void LC3_VM::Run()
     if (is_halted_) 
     {
         instr_count_ = 0;
+        reg_[PC] = pc_start_;
         memory_[MMIO::MCR] = 0x8000; // MCR 初始状态：Bit 15 置 1（Enable），重启 MCR
         is_halted_ = false;
     }
@@ -139,34 +203,34 @@ void LC3_VM::Run()
             if (breakpoints_.count(reg_[PC]))
             {
                 std::cout << "[DEBUG] Breakpoint hit at x"
-                          << std::hex << reg_[PC] << std::dec << std::endl;
+                          << std::hex << std::uppercase << reg_[PC] << std::dec << std::endl;
 
                 PrintReg();
                 running_ = false; // 遇到断点暂停
-                return;
+                return ExitReason::BREAKPOINT;
             }
 
             // 2. 超时检查
             if (instr_count_ >= MAX_INSTR_LIMIT)
-                throw Exception::TIMEOUT;
+                return ExitReason::TIMEOUT;
 
             // 3. 执行指令
             if(Step())
                 instr_count_++;
+            else
+                return ExitReason::EXCEPTION;
         }
     }
     catch (Exception e)
     {
-        // 这里仅会捕获 Exception::TIMEOUT
         RaiseException(e);
+        return ExitReason::EXCEPTION;
     }
 
     // 正常运行结束
     if (is_halted_)
-    {
-        PrintReg();
-        std::cout << "Instr Count: " << GetInstrCount() << std::endl;
-    }
+        return ExitReason::HALTED;
+    return ExitReason::EXCEPTION;
 }
 
 void LC3_VM::AddBreakpoint(uint16_t addr)
@@ -185,22 +249,22 @@ void LC3_VM::PrintReg() const
     std::cout << "-- -Register Table-- -" << std::endl;
     for (uint16_t i = 0; i <= REG_R7; i++)
     {
-        std::cout << "R" << i << ": x" << std::hex << reg_[i] 
+        std::cout << "R" << i << ": x" << std::hex << std::uppercase << reg_[i]
                   << std::dec << " (#" << static_cast<int16_t>(reg_[i]) << ")"
                   << std::endl;
     }
 
     std::cout << "PC: x"
-              << std::hex << reg_[PC] << std::dec << std::endl;
+              << std::hex << std::uppercase << reg_[PC] << std::dec << std::endl;
 
     std::cout << "IR: x"
-              << std::hex << reg_[IR] << std::dec << std::endl;
+              << std::hex << std::uppercase << reg_[IR] << std::dec << std::endl;
 }
 
 void LC3_VM::PrintMem(uint16_t start_addr, uint16_t end_addr) const
 {
-    std::cout << "-- -Memory Table[x" 
-              << std::hex << start_addr << " - x" 
+    std::cout << "-- -Memory Table[x"
+              << std::hex << std::uppercase << start_addr << " - x"
               << end_addr << "]- --" << std::endl;
 
     for (uint32_t i = start_addr; i <= end_addr && i < MEMORY_MAX; i++)
@@ -209,6 +273,11 @@ void LC3_VM::PrintMem(uint16_t start_addr, uint16_t end_addr) const
     }
 
     std::cout << std::dec;
+}
+
+uint16_t LC3_VM::GetReg(RegID reg) const
+{
+    return reg_[reg];
 }
 
 uint32_t LC3_VM::GetInstrCount() const
@@ -225,7 +294,7 @@ void LC3_VM::Fetch()
     reg_[PC]++;
 }
 
-OpCode LC3_VM::Decode()
+OpCode LC3_VM::Decode() const
 {
     uint16_t op = Utils::Bit::GetBits(reg_[IR], 15, 12);
     return static_cast<OpCode>(op);
@@ -282,22 +351,20 @@ void LC3_VM::UpdateCC(uint16_t reg)
         reg_[PSR] |= CondCode::POS;
 }
 
-bool LC3_VM::CheckAccess(uint16_t addr)
+void LC3_VM::CheckAccess(uint16_t addr) const
 {
     // 用户模式：
     // 不允许访问 0x0000-0x2FFF；
     // 可自由读写 0x3000-0xFDFF；
     // 不允许访问 0xFE00-0xFFFF.
-    bool is_user_mode = ((reg_[PSR] & 0x8000) != 0);
-    if (is_user_mode)
+    if ((reg_[PSR] & 0x8000) != 0)
     {
         if (addr < 0x3000 || addr > 0xFDFF)
             throw Exception::ACV;
     }
-    return true;
 }
 
-uint16_t LC3_VM::MemRead(uint16_t addr)
+uint16_t LC3_VM::MemRead(uint16_t addr) const
 {
     CheckAccess(addr);
 
@@ -603,10 +670,7 @@ void LC3_VM::OpTRAP()
 
     // 2. 加载服务历程
     // TRAP Vector (Bits 7-0)
-    uint16_t trap_vector = Utils::Bit::GetBits(reg_[IR], 7, 0);
-    
-    // 2.5 绿色通道
-    switch (trap_vector)
+    switch (uint16_t trap_vector = Utils::Bit::GetBits(reg_[IR], 7, 0))
     {
         case TRAP_HALT: TrapHALT(); return;
         
@@ -616,9 +680,9 @@ void LC3_VM::OpTRAP()
         case TRAP_PUTS:
         case TRAP_IN:
         case TRAP_PUTSP: TrapHALT(); return;
+        default:
+            reg_[PC] = MemRead(trap_vector); // 然后执行，之后用 RTI 返回
     }
-
-    reg_[PC] = MemRead(trap_vector); // 然后执行，之后用 RTI 返回
 }
 
 void LC3_VM::OpRTI()

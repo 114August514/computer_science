@@ -9,8 +9,9 @@
 
 void ShowUsage()
 {
+    std::cout << "LC-3 Assmbler" << std::endl;
     std::cout << "Usage:" << std::endl;
-    std::cout << "  Assemble: assembler [options] <input.asm> <output.bin>" << std::endl;
+    std::cout << "  Assemble: lc3_asm <input.asm> <output.bin> [options]" << std::endl;
     std::cout << "   -d   Debug mode (print machine code)" << std::endl;
 }
 
