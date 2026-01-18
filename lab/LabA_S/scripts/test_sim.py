@@ -4,24 +4,28 @@ import sys
 import struct
 import tomllib
 import subprocess
-from typing import Any, TypeAlias, TypedDict
+from typing import TypeAlias, TypedDict
 
 # === 配置区域 ===
+# 获取项目根目录
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # 汇编器可执行文件路径
-SIMULATOR_EXE : str = r"cmake-build-debug\lc3_sim.exe"
+SIMULATOR_EXE = os.path.join(PROJECT_ROOT, "cmake-build-debug", "lc3_sim.exe")
 
 # 测试样例目录
-TEST_CASE_DIR : str = r"test_case\bin"
+TEST_CASE_DIR = os.path.join(PROJECT_ROOT, "test_case", "bin")
 
 # 配置文件路径
-CONFIG_FILE : str = "test_config.toml"
+CONFIG_FILE = os.path.join(PROJECT_ROOT, "config", "test_sim_config.toml")
 
 # 临时二进制文件 (用于转换 文本文件 -> .bin)
-TEMP_BIN : str = "temp_sim_test.bin"
+TEMP_DIR = os.path.join(PROJECT_ROOT, "test_case", "temp")
+TEMP_BIN = os.path.join(TEMP_DIR, "temp_sim_test.bin")
 
 # 基础输出目录
-OUTPUT_DIR : str = r"test_case\output"
-SIM_OUTPUT_DIR : str = os.path.join(OUTPUT_DIR, "sim")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "test_case", "output")
+SIM_OUTPUT_DIR = os.path.join(OUTPUT_DIR, "sim")
 # =======================
 
 # === 类型设置 ===
@@ -197,6 +201,7 @@ def run_test_single(case : Case) -> bool:
 if __name__ == "__main__":
 
     # 检查环境
+    ensure_dir(TEMP_DIR)
     ensure_dir(OUTPUT_DIR)
     ensure_dir(SIM_OUTPUT_DIR)
 

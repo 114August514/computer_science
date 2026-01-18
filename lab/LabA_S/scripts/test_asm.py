@@ -4,17 +4,20 @@ import sys
 # import filecmp    # 原本以为是两个二进制文件比较的
 
 # === 配置区域 ===
+# 获取项目根目录
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # 汇编器可执行文件路径
-ASSEMBLER_EXE = r"cmake-build-debug\lc3_asm.exe"
+ASSEMBLER_EXE = os.path.join(PROJECT_ROOT, "cmake-build-debug", "lc3_asm.exe")
 
 # 测试样例目录
-TEST_CASE_DIR = r"test_case\asm"
+TEST_CASE_DIR = os.path.join(PROJECT_ROOT, "test_case", "asm")
 
 # 预期输出目录
-EXPECTED_DIR = r"test_case\bin"
+EXPECTED_DIR = os.path.join(PROJECT_ROOT, "test_case", "bin")
 
 # 基础输出目录
-OUTPUT_DIR = r"test_case\output"
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "test_case", "output")
 BIN_OUTPUT_DIR = os.path.join(OUTPUT_DIR, "bin")
 SYMBOL_OUTPUT_DIR = os.path.join(OUTPUT_DIR, "symbol")
 # ===============
@@ -118,7 +121,7 @@ def run_test_single(file_name):
     except Exception as e:
         print(f"\n[ERROR] Execution failed: {e}")
         return False
-                
+
 def run_all():
     print(f"Scanning test cases in {TEST_CASE_DIR}...\n")
     files = [f for f in os.listdir(TEST_CASE_DIR) if f.endswith(".asm")]

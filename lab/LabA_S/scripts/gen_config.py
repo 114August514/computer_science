@@ -1,11 +1,14 @@
 import os
 
 # === 配置区域 ===
+# 获取项目根目录
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # 测试文件目录
-TEST_CASE_DIR = r"test_case\bin"
+TEST_CASE_DIR = os.path.join(PROJECT_ROOT, "test_case", "bin")
 
 # 基础输出目录
-OUTPUT_TOML = "test_config.toml"
+OUTPUT_TOML = os.path.join(PROJECT_ROOT, "config", "test_config.toml")
 
 # 分割符数量
 LABEL_NUM = 30
