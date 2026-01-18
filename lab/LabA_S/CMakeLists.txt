@@ -43,8 +43,8 @@ add_executable(lc3_asm src/main_asm.cpp)
 target_link_libraries(lc3_asm PRIVATE lc3_assembler_lib)
 
 # === 模拟器可执行文件 ===
-add_executable(lc3-sim src/main_sim.cpp)
-target_link_libraries(lc3-sim PRIVATE lc3_simulator_lib)
+add_executable(lc3_sim src/main_sim.cpp)
+target_link_libraries(lc3_sim PRIVATE lc3_simulator_lib)
 
 # 4. 环境配置
 # 强制使用静态链接，防止脱离 CLion 运行时因缺少 DLL 而崩溃

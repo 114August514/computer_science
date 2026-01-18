@@ -1,0 +1,274 @@
+# ==============================
+# LC-3 模拟器测试配置
+# ==============================
+
+# ------------------------------
+# Test1
+# ------------------------------
+[[case]]
+name = "fibonacci.asm"
+file = "fibonacci.asm.bin"
+desc = "..."
+
+	[case.init]
+  	# ...
+
+	[case.expect]
+	R1 = 8 
+
+# ------------------------------
+# Test2
+# ------------------------------
+[[case]]
+name = "multiplication.asm"
+file = "multiplication.asm.bin"
+desc = "..."
+
+	[case.init]
+	# ...
+
+	[case.expect]
+	R2 = 42
+
+# ------------------------------
+# Test3
+# ------------------------------
+[[case]]
+name = "recursion.asm"
+file = "recursion.asm.bin"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.expect]
+	R1 = 120
+
+# ------------------------------
+# Test4
+# ------------------------------
+[[case]]
+name = "stack_operations.asm"
+file = "stack_operations.asm.bin"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+    stop_at = 0x3014
+
+	[case.expect]
+	R6 = 0x4000
+	# "M0x3FFF" = 0x000A
+	# "M0x3FFE" = 0x0014
+	# count = 10
+
+# ------------------------------
+# Test5
+# ------------------------------
+[[case]]
+name = "string_length.asm"
+file = "string_length.asm.bin"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.expect]
+	R1 = 5
+	# PC = 0x3005
+
+# ------------------------------
+# Test6.1
+# ------------------------------
+[[case]]
+name = "test_add.asm1"
+file = "test_add.asm.bin"
+desc = "..."
+
+	[case.init]
+	PC = 0x3000
+
+	[case.config]
+    stop_at = 0x3005
+
+	[case.expect]
+	R1 = 8
+
+# ------------------------------
+# Test6.2
+# ------------------------------
+[[case]]
+name = "test_add.asm2"
+file = "test_add.asm.bin"
+desc = "..."
+
+	[case.init]
+	PC = 0x3007
+
+	[case.config]
+    stop_at = 0x3009
+
+	[case.expect]
+	R1 = 15
+
+# ------------------------------
+# Test6.3
+# ------------------------------
+[[case]]
+name = "test_add.asm3"
+file = "test_add.asm.bin"
+desc = "..."
+
+	[case.init]
+	PC = 0x300B
+
+	[case.config]
+    stop_at = 0x300D
+
+	[case.expect]
+	R1 = -16
+
+# ------------------------------
+# Test6.4
+# ------------------------------
+[[case]]
+name = "test_add.asm4"
+file = "test_add.asm.bin"
+desc = "..."
+
+	[case.init]
+	PC = 0x3010
+
+	[case.config]
+    stop_at = 0x3012
+
+	[case.expect]
+	R1 = 0
+
+# ------------------------------
+# Test7.1
+# ------------------------------
+[[case]]
+name = "test_and_not.asm1"
+file = "test_and_not.asm.bin"
+desc = "..."
+
+	[case.init]
+	PC = 0x3000
+
+	[case.config]
+    stop_at = 0x3003
+
+	[case.expect]
+	R3 = 0
+
+# ------------------------------
+# Test7.2
+# ------------------------------
+[[case]]
+name = "test_and_not.asm2"
+file = "test_and_not.asm.bin"
+desc = "..."
+
+	[case.init]
+	PC = 0x300C
+
+	[case.config]
+    stop_at = 0x300E
+
+	[case.expect]
+	R1 = 0
+
+# ------------------------------
+# Test7.3
+# ------------------------------
+[[case]]
+name = "test_and_not.asm3"
+file = "test_and_not.asm.bin"
+desc = "..."
+
+	[case.init]
+	PC = 0x3014
+
+	[case.config]
+    stop_at = 0x3017
+
+	[case.expect]
+	R1 = 0
+
+# ------------------------------
+# Test8
+# ------------------------------
+[[case]]
+name = "test_branch.asm"
+file = "test_branch.asm.bin"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+# ------------------------------
+# Test9
+# ------------------------------
+[[case]]
+name = "test_jump.asm"
+file = "test_jump.asm.bin"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+# ------------------------------
+# Test10
+# ------------------------------
+[[case]]
+name = "test_load_store.asm"
+file = "test_load_store.asm.bin"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+# ------------------------------
+# Test11
+# ------------------------------
+[[case]]
+name = "test_subroutine.asm"
+file = "test_subroutine.asm.bin"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+

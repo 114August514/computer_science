@@ -33,14 +33,16 @@ namespace
 // 1. 公共接口实现 
 LC3_VM::LC3_VM()
 {
-    // 设置 PSR
+    // 设置专用寄存器
     // 默认为：用户模式，CC = Z
     reg_[PSR] = 0x8002;
+    reg_[SSP] = 0x3000;
 
-    running_ = false;
+    running_ = true;
     is_halted_ = false;
 
     instr_count_ = 0;
+    memory_[MMIO::MCR] = 0x8000; // MCR 初始状态：Bit 15 置 1（Enable），重启 MCR
 }
 
 bool LC3_VM::LoadBinFile(const string& file_path)

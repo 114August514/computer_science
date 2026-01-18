@@ -1,1 +1,6 @@
+# 忽视指定文件夹
 test_case/
+.venv/
+
+# 忽视指定文件
+.python-version

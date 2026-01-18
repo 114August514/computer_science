@@ -17,6 +17,7 @@ EXPECTED_DIR = r"test_case\bin"
 OUTPUT_DIR = r"test_case\output"
 BIN_OUTPUT_DIR = os.path.join(OUTPUT_DIR, "bin")
 SYMBOL_OUTPUT_DIR = os.path.join(OUTPUT_DIR, "symbol")
+# ===============
 
 def ensure_dir(directory):
     if not os.path.exists(directory):
