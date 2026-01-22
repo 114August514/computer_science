@@ -19,6 +19,7 @@ TEST_CASE_DIR = os.path.join(ROOT_DIR, "test_case")
 CONFIG_DIR = os.path.join(ROOT_DIR, "config")
 ASM_SRC_DIR = os.path.join(TEST_CASE_DIR, "asm")
 EXPECT_BIN_DIR = os.path.join(TEST_CASE_DIR, "bin")
+EXPECT_SYM_DIR = os.path.join(TEST_CASE_DIR, "symbol")
 
 # 输出目录
 OUTPUT_DIR = os.path.join(TEST_CASE_DIR, "output")

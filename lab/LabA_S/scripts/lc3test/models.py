@@ -25,7 +25,8 @@ class TestCase(ABC):
 # ===============================
 @dataclass
 class AsmCase(TestCase):
-    expect_file: Optional[str] = None
+    bin_expect: Optional[str] = None
+    sym_expect: Optional[str] = None
 
     @classmethod
     def from_toml_dict(cls, data: dict[str, any]) -> 'AsmCase':
@@ -40,9 +41,10 @@ class AsmCase(TestCase):
 
         # b. 提取可选字段（如果仅运行测试汇编器，该字段必须有）
         expect_node: dict = data.get("expect")
-        expect_file = expect_node.get("expect")
+        bin_expect = expect_node.get("bin_expect", None)
+        sym_expect = expect_node.get("sym_expect", None)
 
-        return cls(name=name, file=file, desc=desc, expect_file=expect_file)
+        return cls(name=name, file=file, desc=desc, bin_expect=bin_expect, sym_expect=sym_expect)
 
 # ===============================
 # 3. 模拟器测试配置类

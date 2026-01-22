@@ -11,7 +11,8 @@ file = "fibonacci.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "fibonacci.asm.bin"
+	bin_expect = "fibonacci.asm.bin"
+	sym_expect = "fibonacci.asm_symtable.txt"
 
 
 # ------------------------------
@@ -23,7 +24,8 @@ file = "multiplication.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "multiplication.asm.bin"
+	bin_expect = "multiplication.asm.bin"
+	sym_expect = "multiplication.asm_symtable.txt"
 
 
 # ------------------------------
@@ -35,7 +37,8 @@ file = "recursion.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "recursion.asm.bin"
+	bin_expect = "recursion.asm.bin"
+	sym_expect = "recursion.asm_symtable.txt"
 
 
 # ------------------------------
@@ -47,7 +50,8 @@ file = "stack_operations.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "stack_operations.asm.bin"
+	bin_expect = "stack_operations.asm.bin"
+	sym_expect = "stack_operations.asm_symtable.txt"
 
 
 # ------------------------------
@@ -59,7 +63,8 @@ file = "string_length.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "string_length.asm.bin"
+	bin_expect = "string_length.asm.bin"
+	sym_expect = "string_length.asm_symtable.txt"
 
 
 # ------------------------------
@@ -71,7 +76,8 @@ file = "test_add.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "test_add.asm.bin"
+	bin_expect = "test_add.asm.bin"
+	sym_expect = "test_add.asm_symtable.txt"
 
 
 # ------------------------------
@@ -83,7 +89,8 @@ file = "test_and_not.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "test_and_not.asm.bin"
+	bin_expect = "test_and_not.asm.bin"
+	sym_expect = "test_and_not.asm_symtable.txt"
 
 
 # ------------------------------
@@ -95,7 +102,8 @@ file = "test_branch.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "test_branch.asm.bin"
+	bin_expect = "test_branch.asm.bin"
+	sym_expect = "test_branch.asm_symtable.txt"
 
 
 # ------------------------------
@@ -107,7 +115,8 @@ file = "test_jump.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "test_jump.asm.bin"
+	bin_expect = "test_jump.asm.bin"
+	sym_expect = "test_jump.asm_symtable.txt"
 
 
 # ------------------------------
@@ -119,7 +128,8 @@ file = "test_load_store.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "test_load_store.asm.bin"
+	bin_expect = "test_load_store.asm.bin"
+	sym_expect = "test_load_store.asm_symtable.txt"
 
 
 # ------------------------------
@@ -131,6 +141,7 @@ file = "test_subroutine.asm"
 desc = "..."
 
 	[case.expect]
-	expect = "test_subroutine.asm.bin"
+	bin_expect = "test_subroutine.asm.bin"
+	sym_expect = "test_subroutine.asm_symtable.txt"
 
 

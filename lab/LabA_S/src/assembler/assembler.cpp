@@ -124,7 +124,7 @@ Assembler::Assembler(const string &input_path, const string &output_path)
 
 void Assembler::PrintSymbolTable() const
 {
-    std::cout << "-- -Symbol Table-- -" << std::endl;
+    std::cout << "--- Symbol Table ---" << std::endl;
 
     // 用地址排序（原 map 用字典序排序）
     std::vector<std::pair<string, uint16_t>> sorted_symbols(symbol_table_.begin(), symbol_table_.end());

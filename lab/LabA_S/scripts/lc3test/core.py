@@ -92,49 +92,74 @@ class AssemblerRunner(BaseRunner):
         # 1. 准备文件路径
         src_file_path = os.path.join(env.ASM_SRC_DIR, self.case.file)
 
-        out_file_name = os.path.splitext(os.path.basename(self.case.file))[0] + ".bin"
-        out_file_path = os.path.join(env.OUTPUT_DIR, "bin", out_file_name)
+        out_file_name = os.path.splitext(os.path.basename(self.case.file))[0]
+        out_file_path = os.path.join(env.OUTPUT_DIR, "bin", out_file_name + ".bin")
+        symbol_out_path = os.path.join(env.OUTPUT_DIR, "symbol", out_file_name + "_symtable.txt")
 
-        expect_path = None
-        if self.case.expect_file:
-            expect_path = os.path.join(env.EXPECT_BIN_DIR, self.case.expect_file)
+        bin_expect_path = None
+        sym_expect_path = None
+        if self.case.bin_expect:
+            bin_expect_path = os.path.join(env.EXPECT_BIN_DIR, self.case.bin_expect)
+        if self.case.sym_expect:
+            sym_expect_path = os.path.join(env.EXPECT_SYM_DIR, self.case.sym_expect)
 
         # 2. 执行汇编器
-        success, msg, duration = self.compile(src_file_path, out_file_path)
+        success, msg, duration = self.compile(src_file_path, out_file_path, symbol_out_path)
         if not success:
             return self._log(False, msg, duration)
 
         # 3. 验证结果
-        if not expect_path:
+        if not bin_expect_path:
             return self._log(True, "(Compile Only)", duration)
 
-        if not os.path.exists(expect_path):
-            return self._log(False, "Expect missing: {self.case.expect_file}", duration)
+        if not os.path.exists(bin_expect_path):
+            return self._log(False, f"Expect bin missing: {self.case.bin_expect}", duration)
 
-        ok, compare_msg = utils.compare_bin_with_text(out_file_path, expect_path)
+        ok, compare_msg = utils.compare_bin_with_text(out_file_path, bin_expect_path)
+
+        if not ok:
+            return self._log(False, compare_msg, duration)
+
+        if not sym_expect_path:
+            return self._log(True, "(Match Bin Only)", duration)
+
+        if not os.path.exists(sym_expect_path):
+            return self._log(False, f"Expect symboltable missing: {self.case.sym_expect}", duration)
+
+        ok, compare_msg = utils.compare_label_table(symbol_out_path, sym_expect_path)
         return self._log(ok, compare_msg, duration)
 
-    def compile(self, src_path: str, out_path: str) -> tuple[bool, str, float]:
+    def compile(self, src_path: str, out_path: str, symbol_out_path: Optional[str] = None) -> tuple[bool, str, float]:
         """仅调用 lc3_asm，进行编译操作"""
         if not os.path.exists(src_path):
             return False, f"Source not found: {src_path}", 0
-        
+
         # 前期准备
         utils.ensure_dir(os.path.dirname(out_path))
         cmd = [env.ASM_EXE, src_path, out_path] # 不开启 debug 模式
+        if symbol_out_path:
+            utils.ensure_dir(os.path.dirname(symbol_out_path))
+            cmd.append("-d")
 
         # 运行程序
         result, duration = self._run_subprocess(cmd)
 
         if result is None:
             return False, "Compile Error", duration
-        
+
         if result.returncode != 0:
             err_head = result.stdout.split('\n') if result.stdout else "Unknown Error"
             return False, f"Compile Error: {err_head}", duration
-        
+
         if not os.path.exists(out_path):
             return False, "Output Missing", duration
+
+        # 处理需要输出符号表的逻辑
+        if symbol_out_path:
+            symbol_content = utils.parse_asm_output(result.stdout)
+            if symbol_content:
+                with open(symbol_out_path, "w", encoding="utf-8") as f:
+                    f.write(symbol_content)
 
         # 当前步骤正确，回答由更高级做答
         return True, "", duration

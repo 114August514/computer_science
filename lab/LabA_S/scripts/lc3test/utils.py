@@ -180,6 +180,33 @@ def compare_bin_with_text(bin_path: str, text_path: str) -> tuple[bool, str]:
     except Exception as e:
         return False, f"Exception: {str(e)}"
 
+def compare_label_table(symbol_path: str, expect_path: str) -> tuple[bool, str]:
+    """
+    比对生成的符号表与预期的符号表。
+    返回：(是否通过, 错误信息)
+    """
+    try:
+        # 1. 获取生成的数据
+        with open(symbol_path, "r", encoding="utf-8") as f:
+            gen_lines = [line.strip() for line in f.readlines() if line.strip()]
+
+        # 2. 获取期望的数据
+        with open(expect_path, "r", encoding="utf-8") as f:
+            expected_lines = [line.strip() for line in f.readlines() if line.strip()]
+
+        # 3. 逐行比较
+        if len(gen_lines) != len(expected_lines):
+            return False, f"Line count mismatch: Generated {len(gen_lines)} lines vs Expected {len(expected_lines)} lines"
+
+        for idx, (gen, exp) in enumerate(zip(gen_lines, expected_lines)):
+            if gen.upper() != exp.upper():
+                return False, f"Mismatch at line {idx+1}: Got '{gen}' vs Exp '{exp}'"
+
+        return True, "Match"
+
+    except Exception as e:
+        return False, f"Exception: {str(e)}"
+
 def verify_sim_state(actual_state: dict[str, int], expect_state: dict[str, int]) -> list[str]:
     """比较模拟器实际运行结果与预期结果"""
     failed_reasons = []
@@ -201,8 +228,25 @@ def verify_sim_state(actual_state: dict[str, int], expect_state: dict[str, int])
     return failed_reasons
 
 # ===============================
-# 5. 解析输出字符串函数
+# 5. 辅助输出函数
 # ===============================
+def parse_asm_output(stdout: str) -> str | None:
+    """解析汇编器输出，提取符号表"""
+    # 常量
+    start_marker = "--- Symbol Table ---"
+    end_marker = "--------------------"
+
+    # 解析
+    idx_start = stdout.find(start_marker)
+    if idx_start != -1:
+        idx_end = stdout.find(end_marker, idx_start)
+        if idx_end != -1:
+            idx_end += len(end_marker)
+            symbol_content = stdout[idx_start:idx_end]
+            return symbol_content
+        
+    return None
+
 def parse_sim_output(output_text: str) -> dict[str, int]:
     """解析模拟器标准输出，提取寄存器和统计信息。"""
     state: dict[str, int] = {}
@@ -307,4 +351,3 @@ def parse_magic_comments(src_path: str) -> tuple[dict[str, any], dict[str, any],
         print(f"  [Warn] Failed to parse magic comments in {os.path.basename(src_path)}: {e}")
 
     return init_data, config_data, expect_data
-

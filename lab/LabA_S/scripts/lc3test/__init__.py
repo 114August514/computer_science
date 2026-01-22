@@ -24,7 +24,7 @@ from .models import (
 )
 
 # 3. 暴露运行器
-from core import (
+from .core import (
     BaseRunner,
     AssemblerRunner,
     SimulatorRunner,
@@ -32,7 +32,7 @@ from core import (
 )
 
 # 4. 核心工具的外部接口
-from utils import (
+from .utils import (
     load_toml,
     Colors
 )

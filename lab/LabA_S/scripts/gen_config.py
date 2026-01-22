@@ -8,6 +8,7 @@ def generate_asm_config():
     # 1. 确认路径
     asm_src_dir = env.ASM_SRC_DIR
     asm_expect_dir = env.EXPECT_BIN_DIR
+    asm_symbal_dir = env.EXPECT_SYM_DIR
     config_path = os.path.join(env.CONFIG_DIR, "test_asm.toml")
 
     print(f"Scanning for Assembler tests in {asm_src_dir}...")
@@ -35,10 +36,14 @@ def generate_asm_config():
         for asm_file in files:
             base_name = os.path.splitext(asm_file)[0]
 
-            expect_file = None
+            bin_expect_file = None
+            sym_expect_file = None
             if os.path.exists(os.path.join(asm_expect_dir, asm_file + ".bin")):
                 # 注意：TOML 里写相对路径，相对于 asm_expect_dir
-                expect_file = asm_file + ".bin"
+                bin_expect_file = asm_file + ".bin"
+
+            if os.path.exists(os.path.join(asm_symbal_dir, asm_file + "_symtable.txt")):
+                sym_expect_file = asm_file + "_symtable.txt"
 
             index += 1
 
@@ -48,15 +53,15 @@ def generate_asm_config():
 
             f.write(f"[[case]]\n")
             f.write(f'name = "{base_name}"\n')
-            f.write(
-                f'file = "{asm_file}"\n'
-            )  # 注意：TOML 里写相对路径，相对于 asm_src_dir
+            f.write(f'file = "{asm_file}"\n')  # 注意：TOML 里写相对路径，相对于 asm_src_dir
             f.write(f'desc = "..."\n\n')
 
             # 生成预期结果
-            if expect_file:
-                f.write("\t[case.expect]\n")
-                f.write(f'\texpect = "{expect_file}"\n')
+            f.write("\t[case.expect]\n")
+            if bin_expect_file:
+                f.write(f'\tbin_expect = "{bin_expect_file}"\n')
+            if sym_expect_file:
+                f.write(f'\tsym_expect = "{sym_expect_file}"\n')
 
             f.write("\n\n")
 
