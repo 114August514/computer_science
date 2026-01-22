@@ -1,0 +1,5 @@
+--- Symbol Table ---
+FAIL : x301a
+PASS_MSG : x301d
+FAIL_MSG : x302e
+--------------------

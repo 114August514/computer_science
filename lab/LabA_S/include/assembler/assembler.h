@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 #include <fstream>
-#include "types.h"
+#include "common/types.h"
 
 class Assembler
 {
@@ -79,7 +79,7 @@ class Assembler
         // tokens：切分后的指令单词;
         // current_address：当前指令地址；
         // return：16位机器码
-        uint16_t TranslateLine(const std::vector<string>& tokens, uint16_t current_address);
+        uint16_t TranslateLine(const std::vector<string>& tokens);
 
         // 处理 ADD AND NOT
         static uint16_t HandleOperate(const std::vector<string> &tokens, OpCode op);

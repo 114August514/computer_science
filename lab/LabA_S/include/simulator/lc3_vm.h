@@ -9,7 +9,7 @@
 #define LC3_VM_H
 
 #include <set>
-#include "types.h"
+#include "common/types.h"
 
 class LC3_VM
 {

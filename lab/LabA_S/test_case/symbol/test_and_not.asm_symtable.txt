@@ -1,0 +1,9 @@
+--- Symbol Table ---
+FAIL : x301b
+VAL_A : x301e
+VAL_5 : x301f
+VAL_F : x3020
+VAL_1234 : x3021
+PASS_MSG : x3022
+FAIL_MSG : x3037
+--------------------

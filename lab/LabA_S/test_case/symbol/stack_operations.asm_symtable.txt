@@ -1,0 +1,6 @@
+--- Symbol Table ---
+FAIL : x3016
+STACK_TOP : x3019
+PASS_MSG : x301a
+FAIL_MSG : x3031
+--------------------

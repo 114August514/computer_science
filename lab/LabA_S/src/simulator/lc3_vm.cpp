@@ -6,9 +6,9 @@
 #include <unordered_map>
 #include <fstream>
 #include <iostream>
-#include "types.h"
-#include "utils.h"
-#include "lc3_vm.h"
+#include "common/types.h"
+#include "common/utils.h"
+#include "simulator/lc3_vm.h"
 
 // 0. 本地辅助函数
 namespace

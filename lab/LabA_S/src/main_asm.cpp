@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include "assembler.h"
+#include "assembler/assembler.h"
 
 void ShowUsage()
 {

@@ -1,0 +1,7 @@
+--- Symbol Table ---
+MULT_LOOP : x3007
+DONE : x300a
+FAIL : x3011
+PASS_MSG : x3014
+FAIL_MSG : x3030
+--------------------

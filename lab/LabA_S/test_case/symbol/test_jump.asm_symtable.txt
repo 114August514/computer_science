@@ -1,0 +1,8 @@
+--- Symbol Table ---
+TARGET_JMP : x3003
+FAIL : x3006
+SUBROUTINE : x3009
+SUCCESS_RET : x300b
+PASS_MSG : x300e
+FAIL_MSG : x3023
+--------------------

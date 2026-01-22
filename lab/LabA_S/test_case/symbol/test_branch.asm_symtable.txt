@@ -1,0 +1,15 @@
+--- Symbol Table ---
+PASS_N : x3004
+PASS_Z : x3007
+PASS_P : x300b
+PASS_NZ_1 : x300f
+PASS_NZ_2 : x3012
+PASS_ZP_1 : x3015
+PASS_ZP_2 : x3019
+PASS_NP_1 : x301d
+PASS_NP_2 : x3021
+FAIL : x3023
+PASS_ALL : x3026
+PASS_MSG : x3029
+FAIL_MSG : x303d
+--------------------

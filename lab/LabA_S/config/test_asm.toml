@@ -1,0 +1,136 @@
+# ==============================
+# LC-3 Assembler Config
+# ==============================
+
+# ------------------------------
+# Test1
+# ------------------------------
+[[case]]
+name = "fibonacci"
+file = "fibonacci.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "fibonacci.asm.bin"
+
+
+# ------------------------------
+# Test2
+# ------------------------------
+[[case]]
+name = "multiplication"
+file = "multiplication.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "multiplication.asm.bin"
+
+
+# ------------------------------
+# Test3
+# ------------------------------
+[[case]]
+name = "recursion"
+file = "recursion.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "recursion.asm.bin"
+
+
+# ------------------------------
+# Test4
+# ------------------------------
+[[case]]
+name = "stack_operations"
+file = "stack_operations.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "stack_operations.asm.bin"
+
+
+# ------------------------------
+# Test5
+# ------------------------------
+[[case]]
+name = "string_length"
+file = "string_length.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "string_length.asm.bin"
+
+
+# ------------------------------
+# Test6
+# ------------------------------
+[[case]]
+name = "test_add"
+file = "test_add.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "test_add.asm.bin"
+
+
+# ------------------------------
+# Test7
+# ------------------------------
+[[case]]
+name = "test_and_not"
+file = "test_and_not.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "test_and_not.asm.bin"
+
+
+# ------------------------------
+# Test8
+# ------------------------------
+[[case]]
+name = "test_branch"
+file = "test_branch.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "test_branch.asm.bin"
+
+
+# ------------------------------
+# Test9
+# ------------------------------
+[[case]]
+name = "test_jump"
+file = "test_jump.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "test_jump.asm.bin"
+
+
+# ------------------------------
+# Test10
+# ------------------------------
+[[case]]
+name = "test_load_store"
+file = "test_load_store.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "test_load_store.asm.bin"
+
+
+# ------------------------------
+# Test11
+# ------------------------------
+[[case]]
+name = "test_subroutine"
+file = "test_subroutine.asm"
+desc = "..."
+
+	[case.expect]
+	expect = "test_subroutine.asm.bin"
+
+

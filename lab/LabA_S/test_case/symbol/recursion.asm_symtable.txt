@@ -1,0 +1,11 @@
+--- Symbol Table ---
+FAIL : x300a
+FACTORIAL : x300d
+MULT_LOOP : x301c
+BASE_CASE : x3025
+FACT_RET : x3027
+STACK_BASE : x302c
+VAL_NEG_120 : x302d
+PASS_MSG : x302e
+FAIL_MSG : x3045
+--------------------

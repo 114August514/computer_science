@@ -1,0 +1,235 @@
+# ==============================
+# LC-3 Integration Config
+# ==============================
+
+# ------------------------------
+# Test1
+# ------------------------------
+[[case]]
+name = "fibonacci"
+file = "fibonacci.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test2
+# ------------------------------
+[[case]]
+name = "multiplication"
+file = "multiplication.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test3
+# ------------------------------
+[[case]]
+name = "recursion"
+file = "recursion.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test4
+# ------------------------------
+[[case]]
+name = "stack_operations"
+file = "stack_operations.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test5
+# ------------------------------
+[[case]]
+name = "string_length"
+file = "string_length.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test6
+# ------------------------------
+[[case]]
+name = "test_add"
+file = "test_add.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test7
+# ------------------------------
+[[case]]
+name = "test_and_not"
+file = "test_and_not.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test8
+# ------------------------------
+[[case]]
+name = "test_branch"
+file = "test_branch.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test9
+# ------------------------------
+[[case]]
+name = "test_jump"
+file = "test_jump.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test10
+# ------------------------------
+[[case]]
+name = "test_load_store"
+file = "test_load_store.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+
+# ------------------------------
+# Test11
+# ------------------------------
+[[case]]
+name = "test_subroutine"
+file = "test_subroutine.asm"
+desc = "..."
+
+	[case.init]
+	# PC = 0x3000
+	# R0 = 10
+	# "M0x3000" = 0x1234
+
+	[case.config]
+	# stop_at = 0x3010
+
+	[case.expect]
+	# R0 = 15
+	# PC = 0x3005
+
+

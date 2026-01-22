@@ -1,0 +1,8 @@
+--- Symbol Table ---
+INIT_LOOP : x300a
+LOOP : x300c
+DONE : x3021
+N_ADDR : x3023
+RES_ADDR : x3024
+Q_BASE : x3025
+--------------------

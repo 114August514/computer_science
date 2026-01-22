@@ -1,0 +1,53 @@
+.ORIG x3000
+
+; --- Test JSR (PC-Relative) ---
+JSR SUB_1
+ADD R1, R1, #-1
+BRnp FAIL
+
+; --- Test JSRR (Base Register) ---
+LEA R2, SUB_2
+JSRR R2
+ADD R1, R1, #-2
+BRnp FAIL
+
+; --- Test Nested Calls ---
+AND R1, R1, #0
+JSR SUB_NESTED_OUTER
+ADD R1, R1, #-3
+BRnp FAIL
+
+; Success
+LEA R0, PASS_MSG
+PUTS
+HALT
+
+FAIL
+LEA R0, FAIL_MSG
+PUTS
+HALT
+
+SUB_1
+ADD R1, R1, #1
+RET
+
+SUB_2
+ADD R1, R1, #2
+RET
+
+SUB_NESTED_OUTER
+ST R7, SAVE_R7
+JSR SUB_NESTED_INNER
+LD R7, SAVE_R7
+RET
+
+SUB_NESTED_INNER
+ADD R1, R1, #3
+RET
+
+SAVE_R7 .BLKW 1
+
+PASS_MSG .STRINGZ "Subroutine Test Passed\n"
+FAIL_MSG .STRINGZ "Subroutine Test Failed\n"
+
+.END

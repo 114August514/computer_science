@@ -9,8 +9,8 @@
 #include <map>
 #include <vector>
 #include <algorithm>
-#include "utils.h"
-#include "assembler.h"
+#include "common/utils.h"
+#include "assembler/assembler.h"
 
 // 0. 本地辅助函数
 namespace
@@ -222,7 +222,7 @@ bool Assembler::PassOne()
             PseudoOp pseudo = GetPseudoOpType(tokens[0]);
 
             // 判断是否有 Label（这里还没开始管是不是在代码块里）
-            if (op == OpCode::RES && pseudo == PseudoOp::UNKNOWN)
+            if (op == RES && pseudo == PseudoOp::UNKNOWN)
             {
                 label = tokens[0];
                 start_idx = 1;
@@ -333,7 +333,7 @@ bool Assembler::PassTwo(bool debug_mode)
             PseudoOp pseudo = GetPseudoOpType(tokens[0]);
 
             // 判断是否有 Label（这里还没开始管是不是在代码块里）
-            if (op == OpCode::RES && pseudo == PseudoOp::UNKNOWN)
+            if (op == RES && pseudo == PseudoOp::UNKNOWN)
             {
                 start_idx = 1;
                 if (tokens.size() > 1)
@@ -445,12 +445,12 @@ bool Assembler::PassTwo(bool debug_mode)
             }
 
             // 标准指令
-            if (op != OpCode::RES)
+            if (op != RES)
             {
                 std::vector<string> instr_tokens;
                 instr_tokens.assign(tokens.begin() + start_idx, tokens.end());
 
-                uint16_t bin = TranslateLine(instr_tokens, lc_);
+                uint16_t bin = TranslateLine(instr_tokens);
                 current_block.code.push_back(bin);
 
                 if (debug_mode)
@@ -561,7 +561,7 @@ uint16_t Assembler::CalSize(const std::vector<string> &tokens)
     OpCode op = GetOpType(tokens[0]);
     PseudoOp pseudo = GetPseudoOpType(tokens[0]);
 
-    if (op == OpCode::RES && pseudo == PseudoOp::UNKNOWN)
+    if (op == RES && pseudo == PseudoOp::UNKNOWN)
     {
         if (tokens.size() <= 1) return 0; // 仅有 Label
 
@@ -571,7 +571,7 @@ uint16_t Assembler::CalSize(const std::vector<string> &tokens)
     }
 
     // 处理标准指令
-    if (op != OpCode::RES)
+    if (op != RES)
         return 1;
 
     // 开始处理伪指令
@@ -650,7 +650,7 @@ int16_t Assembler::ParseImmediate(const string &token)
     return static_cast<int16_t> (Utils::Convert::StrToInt(token));
 }
 
-uint16_t Assembler::TranslateLine(const std::vector<string>& tokens, uint16_t current_address)
+uint16_t Assembler::TranslateLine(const std::vector<string>& tokens)
 {
     // 伪指令不调用此函数生成机器码
     if (tokens.empty()) return 0; // 空行
@@ -660,7 +660,7 @@ uint16_t Assembler::TranslateLine(const std::vector<string>& tokens, uint16_t cu
     OpCode op = GetOpType(tokens[0]);
     PseudoOp pseudo = GetPseudoOpType(tokens[0]);
 
-    if (op == OpCode::RES && pseudo == PseudoOp::UNKNOWN)
+    if (op == RES && pseudo == PseudoOp::UNKNOWN)
     {
         if (tokens.size() <= 1) return 0; // 仅有 Label
 
@@ -681,32 +681,32 @@ uint16_t Assembler::TranslateLine(const std::vector<string>& tokens, uint16_t cu
     // 4. 处理指令
     switch (op)
     {
-        case OpCode::ADD:
-        case OpCode::AND:
-        case OpCode::NOT:
+        case ADD:
+        case AND:
+        case NOT:
             return HandleOperate(instruction_tokens, op);
 
-        case OpCode::LD:
-        case OpCode::LDI:
-        case OpCode::ST:
-        case OpCode::STI:
-        case OpCode::LEA:
-        case OpCode::BR:
-        case OpCode::JSR:
+        case LD:
+        case LDI:
+        case ST:
+        case STI:
+        case LEA:
+        case BR:
+        case JSR:
             return HandlePcRelative(instruction_tokens, op);
 
-        case OpCode::LDR:
-        case OpCode::STR:
+        case LDR:
+        case STR:
             return HandleBaseOffset(instruction_tokens, op);
 
-        case OpCode::JMP:
-        case OpCode::JSRR:
+        case JMP:
+        case JSRR:
             return HandleRegOnly(instruction_tokens, op);
 
-        case OpCode::TRAP:
+        case TRAP:
             return HandleTrap(instruction_tokens);
 
-        case OpCode::RTI:
+        case RTI:
             return 0x8000; // RTI 固定为 1000 0000 0000 0000
 
         default:

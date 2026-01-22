@@ -1,0 +1,10 @@
+--- Symbol Table ---
+FAIL : x300e
+SUB_1 : x3011
+SUB_2 : x3013
+SUB_NESTED_OUTER : x3015
+SUB_NESTED_INNER : x3019
+SAVE_R7 : x301b
+PASS_MSG : x301c
+FAIL_MSG : x3034
+--------------------

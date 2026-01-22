@@ -7,9 +7,9 @@
 #include <limits>
 #include <string>
 
-#include "lc3_vm.h"
-#include "types.h"
-#include "utils.h"
+#include "simulator/lc3_vm.h"
+#include "common/types.h"
+#include "common/utils.h"
 
 void ShowUsage()
 {

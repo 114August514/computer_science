@@ -1,0 +1,31 @@
+.ORIG x3000
+
+LEA R0, TEST_STR
+AND R1, R1, #0  ; Length counter
+
+STRLEN_LOOP
+LDR R2, R0, #0
+BRz DONE
+ADD R1, R1, #1
+ADD R0, R0, #1
+BR STRLEN_LOOP
+
+DONE
+; "Hello" length is 5
+ADD R3, R1, #-5
+BRnp FAIL
+
+LEA R0, PASS_MSG
+PUTS
+HALT
+
+FAIL
+LEA R0, FAIL_MSG
+PUTS
+HALT
+
+TEST_STR .STRINGZ "Hello"
+PASS_MSG .STRINGZ "String Length Test Passed\n"
+FAIL_MSG .STRINGZ "String Length Test Failed\n"
+
+.END

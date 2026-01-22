@@ -1,0 +1,8 @@
+--- Symbol Table ---
+STRLEN_LOOP : x3002
+DONE : x3007
+FAIL : x300c
+TEST_STR : x300f
+PASS_MSG : x3015
+FAIL_MSG : x3030
+--------------------
