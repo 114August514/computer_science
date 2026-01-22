@@ -1,0 +1,10 @@
+# 默认行为：自动处理
+* text=auto
+
+# 强制以下文件在任何系统上都只用 LF (Linux风格)
+*.c     text eol=lf
+*.cpp   text eol=lf
+*.h     text eol=lf
+*.py    text eol=lf
+*.toml  text eol=lf
+CMakeLists.txt text eol=lf
