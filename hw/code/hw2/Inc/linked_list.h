@@ -5,8 +5,12 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
+#include <stdbool.h>
+
+typedef int ElementType;
+
 typedef struct Node {
-    int value;
+    ElementType value;
     struct Node* next;
 } Point;
 
@@ -16,5 +20,7 @@ void freeList(Point* head);
 
 void mergeList(Point* head1, Point* head2, Point* merged_head);
 void reverseList(Point* head);
+
+bool hasCycle(const Point* head);
 
 #endif //LINKED_LIST_H

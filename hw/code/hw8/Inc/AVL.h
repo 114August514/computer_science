@@ -11,10 +11,17 @@ typedef struct AVLNode
 {
     KeyType key;            // 节点关键字
     struct AVLNode* left;   // 左子节点
+    
     struct AVLNode* right;  // 右子节点
-    int b; // 平衡因子
+    int height;             // 树高
 } AVLNode;
 
-int get_height(AVLNode* root);
+AVLNode* AVL_insert(AVLNode* root, KeyType key);
+AVLNode* AVL_delete(AVLNode* root, KeyType key);
+AVLNode* AVL_search(AVLNode* root, KeyType key);
+
+void AVL_print(AVLNode* root);
+void AVL_free(AVLNode* root);
+int AVL_get_height(AVLNode* root);
 
 #endif //AVL_H

@@ -108,3 +108,23 @@ void reverseList(Point* head)
 
     head->next = past;
 }
+
+bool hasCycle(const Point* head)
+{
+    if (head == NULL)
+        return false;
+
+    Point* slow = head;
+    Point* fast = head;
+
+    while (fast != NULL && fast->next != NULL)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+
+        if (slow == fast)
+            return true;
+    }
+
+    return false;
+}

@@ -1,4 +1,17 @@
-# 忽略特定文件夹
+# 1. 编译构建目录
+build/
+cmake-build-debug/
+
+# 2. Python 环境与缓存
+**/__pycache__/
+*.python-version
+.venv/
+
+# 3. 忽视 IDE 配置 
+.idea/
+.vscode/
+
+# 4. 忽略特定文件夹
 /**/done/
 /**/original/
 temp/
