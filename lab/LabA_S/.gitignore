@@ -10,6 +10,7 @@ cmake-build-debug/
 # 3. 忽视指定文件夹
 **/temp/
 **/output/
+
 # 3.5 保护指定文件夹
 !test_case/lastyear/output/
 
